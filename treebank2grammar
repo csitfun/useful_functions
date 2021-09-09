@@ -1,0 +1,302 @@
+from trees import load_trees, tree_from_str, InternalTreebankNode, LeafTreebankNode
+
+file_path = "all.gold.stripped.fix"
+trees = load_trees(file_path)
+
+example_sentences = [
+    "(TOP (S (NP (DT A) (NN record) (NN date)) (VP (VBZ has) (RB n't) (VP (VBN been) (VP (VBN set)))) (. .)))",
+    "(TOP (S (NP (NNP Richard) (NNP Stoltzman)) (VP (VBZ has) (VP (VBN taken) (NP (DT a) (NN gentler) (, ,) (ADJP (RBR more) (JJ audience-friendly)) (NN approach)))) (. .)))",
+    "(TOP (S (VP (VP (VB Come)) (VP (VB see) (SBAR (WHADVP (WRB how)) (S (NP (PRP we)) (VP (VBP continue) (NP (DT this) (NN tradition))))))) (. .) ('' '')))",
+    "(TOP (S (NP (PRP i)) (VP (VBP think) (SBAR (S (NP (NNP Miramar)) (VP (VBD was) (NP (NP (DT a) (JJ famous) (NN goat) (NN trainer)) (CC or) (NP (NN something))))))) (. .)))",
+    "(TOP (SINV (`` ``) (S (S (NP (NP (DT Those)) (SBAR (WHNP (WP who)) (S (S (VP (VBP have) (NP (DT no) (NN money)))) (CC and) (S (VP (VBP are) (RB n't) (VP (VBG buying))))))) (VP (VB think) (SBAR (S (NP (NP (PRP it))) (VP (VBZ 's) (ADJP (JJ right)) (S (VP (TO to) (VP (NN refrain))))))))) (, ,) (CC but) (S (NP (NP (DT those)) (PP (IN with) (NP (NN money))) (SBAR (WHNP (WP who)) (S (VP (VBP want) (S (VP (TO to) (VP (VB buy) (PP (IN for) (NP (PRP themselves)))))))))) (VP (VBP pay) (NP (DT no) (NN attention))))) (, ,) ('' '') (VP (VBZ says)) (NP (NP (DT an) (NN official)) (PP (IN of) (NP (DT the) (NN Japan-U.S) (. .) (NNP Business) (NNP Council)))) (. .)))",
+    "(TOP (S (SBARQ (WHNP (WP Who)) (SQ (VBZ is) (NP (NN artist) (NNP Gunther) (NNP Uecker)))) (, ;) (S (VP (VB explain))) (. ?)))",
+    "(TOP (SBARQ (UCP (WHADVP (WRB Where)) (CC and) (WHPP (IN to) (WHNP (WP whom)))) (SQ (VBP do) (NP (PRP you)) (VP (VB want) (S (NP (PRP it)) (VP (VBN faxed))))) (. ?)))",
+    "(TOP (S (NP (DT A) (CD 1970) (NN evaluation)) (VP (VBD said) (SBAR (S (NP (NNP Bush)) (VP (VP (`` '') (ADVP (RB clearly)) (VBZ stands) (PRT (RP out)) (PP (IN as) (NP (DT a) (NML (JJ top) (NN notch)) (NML (NN fighter) (NN interceptor)) (NN pilot))) ('' '')) (CC and) (VP (VBD was) (`` '') (NP (NP (DT a) (JJ natural) (NN leader)) (SBAR (WHNP (WP whom)) (S (NP (PRP$ his) (NNS contemporaries)) (VP (VBP look) (PP (IN to)) (PP (IN for) (NP (NN leadership)))))))))))) (. .) ('' '')))",
+    "(TOP (SINV (VP (VBD Came)) (NP (NP (DT the) (NN disintegration)) (PP (IN of) (NP (NP (DT the) (NNPS Beatles) (POS ')) (NNS minds))) (PP (IN with) (NP (NP (NN LSD)) (SBAR (WHNP (WDT which)) (S (VP (VBZ has) (VP (VBN caused) (, ,) (PP (IN among) (NP (NNS others))) (, ,) (NP (NP (NP (JJ schizophrenic) (NNS lyrics)) (PP (JJ such) (IN as) (S (`` '') (NP (PRP I)) (VP (VBP am) (NP (DT the) (NNP Walrus))) ('' '')))) (CC and) (NP (NP (JJ incoherent) (JJ schizophrenic) (JJ musical) (NNS expositions)) (PP (IN like) (NP (`` '') (NNP Revolution) (NNP number) (CD 9) ('' '')))))))))))) (. .)))",
+    "(TOP (S (S (S (S (NP (PRP I)) (VP (VBP do) (RB n't) (VP (VB think) (SBAR (S (NP (PRP they)) (VP (VBP ban) (SBAR (IN if) (S (NP (DT the) (NNS tats)) (VP (VBP are) (RB n't) (ADJP (JJ offensive))))))))))) (CC and) (S (NP (PRP you)) (VP (MD should) (VP (VB make) (S (NP (PRP them)) (RB not) (ADJP (JJ noticeable)) (PP (IN at) (NP (NP (DT the) (NN time)) (PP (IN of) (NP (DT the) (NN interview)))))))))) (CC but) (S (SBAR (IN once) (S (NP (PRP you)) (VP (VBD got) (NP (DT the) (NN job))))) (NP (EX there)) (FRAG (NP (NP (NN nothing)) (SBAR (S (NP (PRP they)) (VP (MD can) (ADVP (RB really)) (VP (VB say))))))))) (S (SBAR (IN if) (FRAG (ADVP (RB so)))) (NP (PRP you)) (VP (VBP have) (NP (NP (DT a) (NN sue) (, /) (NN case)) (PP (IN against) (NP (PRP them))))))))",
+    "(TOP (S (ADVP (RB So)) (, ,) (SBAR (IN as) (S (S (NP (DT each) (NN post)) (VP (VBZ is) (VP (VBN downloaded)))) (CC and) (S (NP (DT the) (NNS directions)) (ADVP (RB carefully)) (VP (VBN followed))))) (, ,) (NP (DT all) (NNS members)) (VP (MD will) (VP (VB be) (VP (VBN reimbursed) (PP (IN for) (NP (NP (PRP$ their) (NN participation)) (PP (IN as) (NP (DT a) (NN List) (NN Developer))))) (PP (IN with) (NP (NP (CD one) (NN dollar)) (NP (DT each))))))) (. .)))",
+
+
+]
+
+# example_tree = tree_from_str(example_sentences[8])
+
+markers_of_present_perfect_tense = [
+    "has",
+    "have",
+    "'ve",
+]
+markers_of_past_perfect_tense = [
+    "had",
+    "'d",
+]
+markers_of_present_continuous_tense = [
+    "is",
+    "am",
+    "'m"
+    "are",
+    "'re",
+]
+markers_of_past_continuous_tense = [
+    "was",
+    "were",
+]
+markers_of_future_tense = [
+    "will",
+    "'ll",
+]
+markers_of_object_clause = [
+    "whether",
+    "if",
+    "who",
+    "whose",
+    "what",
+    "whatever",
+    "which",
+    "whichever",
+    "when",
+    "where",
+    "how",
+    "why",
+    "that"
+]
+markers_of_attributive_clause = [
+    "who",
+    "whom",
+    "which",
+    "that",
+    "whose",
+    "where",
+    "why",
+    "when",
+]
+markers_of_adverbial_clause = [
+    "if",
+    "unless",
+    "wherever",
+    "after",
+    "before",
+    "while",
+    "because",
+    "since",
+    "as",
+    "so",
+    "than",
+    "whereas",
+    "though",
+]
+
+def grammar(tree):
+    grammar_dict = {}
+    tokens = [_.word for _ in tree.leaves()]
+    sentence = " ".join(tokens)
+    node_stack = [tree]
+
+    while node_stack:
+        curr_node = node_stack[0]
+        node_stack = node_stack[1:]
+        node_stack += [_ for _ in curr_node.children if isinstance(_, InternalTreebankNode)]
+
+        if curr_node.label == "SBARQ":
+            grammar_dict['question'] = True
+        elif curr_node.label == "SINV":
+            grammar_dict['inverted sentence'] = True
+        elif curr_node.label == "NP":
+            curr_children = [_ for _ in curr_node.children]
+            try:
+                if isinstance(curr_children[1], InternalTreebankNode) and curr_children[1].label == "SBAR":
+                    sbar_nodes = [_ for _ in curr_children[1].children]
+                    if isinstance(sbar_nodes[0], InternalTreebankNode) and sbar_nodes[0].label == "S":
+                        grammar_dict['attributive clause - that'] = True
+                    elif isinstance(sbar_nodes[0], InternalTreebankNode) and sbar_nodes[0].label == "WHNP":
+                        whnp_nodes = [_ for _ in sbar_nodes[0].children]
+                        if whnp_nodes[0].word in markers_of_attributive_clause:
+                            grammar_dict['attributive clause - {}'.format(whnp_nodes[0].word)] = True
+
+            except:
+                continue
+
+
+
+        elif curr_node.label == "VP":
+            curr_children = [_ for _ in curr_node.children]
+            child = curr_children[0]
+            if isinstance(child, LeafTreebankNode) and child.word == "be":
+                try:
+                    if isinstance(curr_children[1], InternalTreebankNode) and curr_children[1].label == "VP":
+                        next_children = [_ for _ in curr_children[1].children]
+                        if next_children[0].tag == "VBN":
+                            grammar_dict['passive voice'] = True
+                except:
+                    continue
+
+            for temp_node in curr_children:
+                if isinstance(temp_node, LeafTreebankNode):
+                    if temp_node.word in markers_of_future_tense:
+                        grammar_dict['simple_future_tense'] = True
+                    elif temp_node.tag == "VB":
+                        grammar_dict['simple_present_tense'] = True
+                    elif temp_node.tag == "VBP":
+                        try:
+                            if temp_node.word in markers_of_present_continuous_tense \
+                                    and isinstance(curr_children[1], InternalTreebankNode) \
+                                    and curr_children[1].label == "VP":
+                                grammar_dict['present_continuous_tense'] = True
+                            elif temp_node.word in markers_of_present_continuous_tense \
+                                    and isinstance(curr_children[2], InternalTreebankNode) \
+                                    and curr_children[2].label == "VP":
+                                grammar_dict['present_continuous_tense'] = True
+                            elif temp_node.word in markers_of_present_perfect_tense \
+                                    and isinstance(curr_children[1], InternalTreebankNode) \
+                                    and curr_children[1].label == "VP":
+                                grammar_dict['present_perfect_tense'] = True
+                            elif temp_node.word in markers_of_present_perfect_tense \
+                                    and isinstance(curr_children[2], InternalTreebankNode) \
+                                    and curr_children[2].label == "VP":
+                                grammar_dict['present_perfect_tense'] = True
+                            else:
+                                grammar_dict['simple_present_tense'] = True
+                        except:
+                            grammar_dict['simple_present_tense'] = True
+                    elif temp_node.tag == "VBD":
+                        try:
+                            if temp_node.word in markers_of_past_continuous_tense \
+                                    and isinstance(curr_children[1], InternalTreebankNode) \
+                                    and curr_children[1].label == "VP":
+                                grammar_dict['past_continuous_tense'] = True
+                            elif temp_node.word in markers_of_past_continuous_tense \
+                                    and isinstance(curr_children[2], InternalTreebankNode) \
+                                    and curr_children[2].label == "VP":
+                                grammar_dict['past_continuous_tense'] = True
+                            elif temp_node.word in markers_of_past_perfect_tense \
+                                    and isinstance(curr_children[1], InternalTreebankNode) \
+                                    and curr_children[1].label == "VP":
+                                grammar_dict['past_perfect_tense'] = True
+                            elif temp_node.word in markers_of_past_perfect_tense \
+                                    and isinstance(curr_children[2], InternalTreebankNode) \
+                                    and curr_children[2].label == "VP":
+                                grammar_dict['past_perfect_tense'] = True
+                            else:
+                                grammar_dict['simple_past_tense'] = True
+                        except:
+                            grammar_dict['simple_past_tense'] = True
+                    elif temp_node.tag == "VBZ":
+                        try:
+                            if temp_node.word in markers_of_present_perfect_tense \
+                                    and isinstance(curr_children[1], InternalTreebankNode) \
+                                    and curr_children[1].label == "VP":
+                                grammar_dict['present_perfect_tense'] = True
+                            elif temp_node.word in markers_of_present_perfect_tense \
+                                    and isinstance(curr_children[2], InternalTreebankNode) \
+                                    and curr_children[2].label == "VP":
+                                grammar_dict['present_perfect_tense'] = True
+                            else:
+                                grammar_dict['simple_present_tense'] = True
+                        except:
+                            grammar_dict['simple_present_tense'] = True
+
+                elif isinstance(temp_node, InternalTreebankNode):
+                    node_child = [_ for _ in temp_node.children][0]
+                    if isinstance(node_child, InternalTreebankNode) and node_child.label == "VP":
+                        new_node = [_ for _ in node_child.children][0]
+                        if isinstance(new_node, LeafTreebankNode):
+                            if new_node.word in markers_of_future_tense:
+                                grammar_dict['simple_future_tense'] = True
+                            elif new_node.tag == "VB":
+                                grammar_dict['simple_present_tense'] = True
+                            elif new_node.tag == "VBP":
+                                try:
+                                    if new_node.word in markers_of_present_continuous_tense \
+                                            and isinstance(curr_children[1], InternalTreebankNode) \
+                                            and curr_children[1].label == "VP":
+                                        grammar_dict['present_continuous_tense'] = True
+                                    elif new_node.word in markers_of_present_continuous_tense \
+                                            and isinstance(curr_children[2], InternalTreebankNode) \
+                                            and curr_children[2].label == "VP":
+                                        grammar_dict['present_continuous_tense'] = True
+                                    elif new_node.word in markers_of_present_perfect_tense \
+                                            and isinstance(curr_children[1], InternalTreebankNode) \
+                                            and curr_children[1].label == "VP":
+                                        grammar_dict['present_perfect_tense'] = True
+                                    elif new_node.word in markers_of_present_perfect_tense \
+                                            and isinstance(curr_children[2], InternalTreebankNode) \
+                                            and curr_children[2].label == "VP":
+                                        grammar_dict['present_perfect_tense'] = True
+                                except:
+                                    grammar_dict['simple_present_tense'] = True
+                            elif new_node.tag == "VBD":
+                                try:
+                                    if new_node.word in markers_of_past_continuous_tense \
+                                            and isinstance(curr_children[1], InternalTreebankNode) \
+                                            and curr_children[1].label == "VP":
+                                        grammar_dict['past_continuous_tense'] = True
+                                    elif new_node.word in markers_of_past_continuous_tense \
+                                            and isinstance(curr_children[2], InternalTreebankNode) \
+                                            and curr_children[2].label == "VP":
+                                        grammar_dict['past_continuous_tense'] = True
+                                    elif new_node.word in markers_of_past_perfect_tense \
+                                            and isinstance(curr_children[1], InternalTreebankNode) \
+                                            and curr_children[1].label == "VP":
+                                        grammar_dict['past_perfect_tense'] = True
+                                    elif new_node.word in markers_of_past_perfect_tense \
+                                            and isinstance(curr_children[2], InternalTreebankNode) \
+                                            and curr_children[2].label == "VP":
+                                        grammar_dict['past_perfect_tense'] = True
+                                    else:
+                                        grammar_dict['simple_past_tense'] = True
+                                except:
+                                    grammar_dict['simple_past_tense'] = True
+                            elif new_node.tag == "VBZ":
+                                try:
+                                    if new_node.word in markers_of_present_perfect_tense \
+                                            and isinstance(curr_children[1], InternalTreebankNode) \
+                                            and curr_children[1].label == "VP":
+                                        grammar_dict['present_perfect_tense'] = True
+                                    elif new_node.word in markers_of_present_perfect_tense \
+                                            and isinstance(curr_children[2], InternalTreebankNode) \
+                                            and curr_children[2].label == "VP":
+                                        grammar_dict['present_perfect_tense'] = True
+                                    else:
+                                        grammar_dict['simple_present_tense'] = True
+                                except:
+                                    grammar_dict['simple_present_tense'] = True
+
+
+            try:
+                if isinstance(curr_children[1], InternalTreebankNode) and curr_children[1].label == "SBAR":
+                    sbar_nodes = [_ for _ in curr_children[1].children]
+                    if isinstance(sbar_nodes[0], InternalTreebankNode) and sbar_nodes[0].label == "S":
+                        grammar_dict['object clause - that'] = True
+                    elif isinstance(sbar_nodes[0], InternalTreebankNode) and sbar_nodes[0].label == "WHADVP":
+                        whadvp_nodes = [_ for _ in sbar_nodes[0].children]
+                        if whadvp_nodes[0].word in markers_of_object_clause:
+                            grammar_dict['object clause - {}'.format(whadvp_nodes[0].word)] = True
+            except:
+                continue
+                # elif isinstance(temp_node, InternalTreebankNode):
+                #     try:
+        elif curr_node.label == "SBAR":
+            curr_children = [_ for _ in curr_node.children]
+            try:
+                child = curr_children[0]
+                if isinstance(child, LeafTreebankNode) and child.tag == "IN" and child.word in markers_of_adverbial_clause:
+                    grammar_dict['adverbial clause - {}'.format(child.word)] = True
+            except:
+                continue
+        else:
+            continue
+    grammars = []
+    for key in grammar_dict:
+        if grammar_dict[key]:
+            grammars.append(key)
+    while grammars != []:
+        return grammars, sentence
+# for sente in example_sentences:
+#     example_tree = tree_from_str(sente)
+#     print(grammar(example_tree))
+
+for tree in trees:
+    with open("grammar.txt", "a") as file:
+        result = grammar(tree)
+        if result is not None:
+            file.write(str(result)+"\n")
