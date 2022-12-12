@@ -44,7 +44,7 @@ incontext = "transforming a question and answer into a statement: \n question: W
 #api = ChatGPT(email='', password='')
 api = ChatGPT(session_token)
 
-with open('train.txt') as f, open('train_nli.txt', 'a+') as o:
+with open('dev.txt') as f, open('dev_nli.txt', 'a+') as o:
 	lines = f.readlines()
 	output = {}
 	for line in lines:
@@ -88,7 +88,7 @@ with open('train.txt') as f, open('train_nli.txt', 'a+') as o:
 			except Exception as exception:
 				time.sleep(5*retries)
 				retries += 1
-				api.refresh_cookies()
+
 				api.refresh_auth()
 				api.reset_conversation()
 				continue
@@ -112,7 +112,7 @@ with open('train.txt') as f, open('train_nli.txt', 'a+') as o:
 			except Exception as exception:
 				time.sleep(5*retries)
 				retries += 1
-				api.refresh_cookies()
+				#api.refresh_cookies()
 				api.refresh_auth()
 				api.reset_conversation()
 				continue
