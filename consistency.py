@@ -6,7 +6,7 @@ import sklearn
 import nltk
 from nltk import tokenizer
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
-openai.api_key = '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' # xiaodi
+openai.api_key = '' 
 
 incontext = ""
 def gpt3_api(prompt):
